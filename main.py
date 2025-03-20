@@ -378,7 +378,7 @@ class Page1(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
         
-        self.download_path = os.getcwd()  # 預設下載路徑
+        self.download_path = self.master.config.get("download_path") or os.getcwd()
         self.video_url = ""
         
         # 設定 Grid 權重
@@ -595,13 +595,15 @@ class Page1(ctk.CTkFrame):
         download_thread = threading.Thread(target=download_task)
         download_thread.start()
 
-        
     def change_download_path(self):
         """變更下載位置"""
         lang = self.master.current_language
         path = filedialog.askdirectory()
         if path:
             self.download_path = path
+            self.master.config["download_path"] = path
+            save_config(self.master.config)
+
             self.download_path_textbox.configure(state="normal")
             self.download_path_textbox.delete("0.0", "end")
             if lang == "en":
@@ -659,7 +661,7 @@ class Page2(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.download_path = os.getcwd()  # 預設下載路徑
+        self.download_path = self.master.config.get("download_path") or os.getcwd()
         self.video_url = ""
         
         # 播放清單資料，內部儲存，每筆為 dict
@@ -960,6 +962,9 @@ class Page2(ctk.CTkFrame):
         path = filedialog.askdirectory()
         if path:
             self.download_path = path
+            self.master.config["download_path"] = path
+            save_config(self.master.config)
+
             self.download_path_textbox.configure(state="normal")
             self.download_path_textbox.delete("0.0", "end")
             if lang == "en":
@@ -1065,7 +1070,7 @@ class Page2(ctk.CTkFrame):
         self.submit_btn.configure(text=LANGUAGES[lang]["submit_button"])
         self.download_path_textbox.configure(state="normal")
         self.download_path_textbox.delete("0.0", "end")
-        self.download_path_textbox.insert("0.0", f"{LANGUAGES[lang]['download_path_label']} {self.master.download_path}")
+        self.download_path_textbox.insert("0.0", f"{LANGUAGES[lang]['download_path_label']} {self.download_path}")
         self.download_path_textbox.configure(state="disabled")
         self.change_path_button.configure(text=LANGUAGES[lang]["browse_button"])
         

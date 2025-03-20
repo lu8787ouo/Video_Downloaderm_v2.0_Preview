@@ -108,10 +108,10 @@ def parse_playlist(url, resolution, downloader, file_format="mp4"):
 
 @timeit
 def download_video_audio_playlist(url, resolution, download_path, downloader, file_format):
+    temp_id = uuid.uuid4().hex
     if downloader == 'pytubefix':
         logger.info("Using pytubefix to download video...")
         yt_obj = YouTube(url)
-        temp_id = uuid.uuid4().hex
         safe_title = sanitize_filename(yt_obj.title)
 
         if file_format == 'mp4':

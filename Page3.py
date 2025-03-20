@@ -25,8 +25,9 @@ def timeit(func):
 def get_media_duration(file_path):
         try:
             # 使用 ffprobe 取得影片長度（以秒為單位）
+            ffprobe_path = os.path.join(os.path.dirname(__file__), 'ffmpeg', 'bin', 'ffprobe.exe')
             result = subprocess.run(
-                ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", file_path],
+                [ffprobe_path, "-v", "error", "-select_streams", "v:0", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", file_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True
@@ -83,7 +84,7 @@ def convert_video(input_path, resolution, target_format, start_time, duration, v
     base_output = os.path.splitext(input_path)[0] + f"_converted.{target_format}"
     output_path = get_unique_filename(base_output)
 
-    ffmpeg_path = "ffmpeg"
+    ffmpeg_path = os.path.join(os.path.dirname(__file__), 'ffmpeg', 'bin', 'ffmpeg.exe')
     command = [ffmpeg_path]
     if start_time and start_time != "00:00:00":
         command.extend(["-ss", start_time])
@@ -102,7 +103,7 @@ def convert_video(input_path, resolution, target_format, start_time, duration, v
 
     # 記錄 wall-clock 起始時間
     start_clock = time.time()
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, encoding="utf-8")
     
     conversion_speed = None  # 預設：已處理媒體時間 / wall-clock 時間
     estimated_total_wall = None
@@ -157,7 +158,7 @@ def convert_audio(input_path, bitrate, target_format, start_time, duration, prog
     base_output = os.path.splitext(input_path)[0] + f"_converted.{target_format}"
     output_path = get_unique_filename(base_output)
     
-    ffmpeg_path = "ffmpeg"
+    ffmpeg_path = os.path.join(os.path.dirname(__file__), 'ffmpeg', 'bin', 'ffmpeg.exe')
     command = [ffmpeg_path]
     
     if start_time and start_time != "00:00:00":
@@ -191,7 +192,7 @@ def convert_audio(input_path, bitrate, target_format, start_time, duration, prog
     command.extend(["-progress", "pipe:1"])
     command.append(output_path)
     
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, encoding="utf-8")
     
     # 解析 ffmpeg 進度資訊，更新 progress_callback
     while True:

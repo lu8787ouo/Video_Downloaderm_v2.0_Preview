@@ -272,7 +272,11 @@ def download_video_audio(url, resolution, download_path, downloader, file_format
             # 將下載檔案暫存為固定名稱，例如 temp_download.mp4
             temp_template = os.path.join(download_path, "temp_download.%(ext)s")
             ydl_opts = {
-                'format': f'bestvideo[ext=webm][width={width}][height={height}]+bestaudio[ext=webm]/best[ext=webm]',
+                # 第一段先嘗試 webm，再嘗試 mp4，最後 fallback 到 best
+                'format': (
+                    f'bestvideo[ext=webm][width={width}][height={height}]+bestaudio[ext=webm]/'
+                    f'bestvideo[ext=mp4][width={width}][height={height}]+bestaudio[ext=mp4]/best'
+                ),
                 'outtmpl': temp_template,
                 'noplaylist': True,
                 'merge_output_format': 'mp4',
